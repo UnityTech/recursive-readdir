@@ -54,7 +54,11 @@ function readdir(path, ignores, callback) {
       var filePath = p.join(path, file);
       fs.stat(filePath, function(_err, stats) {
         if (_err) {
-          return callback(_err);
+          pending -= 1;
+          if (!pending) {
+            return callback(null, list)
+          }
+          return null;
         }
 
         if (
@@ -64,7 +68,11 @@ function readdir(path, ignores, callback) {
         ) {
           pending -= 1;
           if (!pending) {
-            return callback(null, list);
+            pending -= 1;
+            if (!pending) {
+              return callback(null, list)
+            }
+            return null;
           }
           return null;
         }
